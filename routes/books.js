@@ -28,7 +28,6 @@ router.get('/books/:id', (req, res, next)=>{
 
 router.post('/books', (req, res, next)=>{
   let body = humps.decamelizeKeys(req.body);
-  // console.log(body);
 
   knex.insert(body)
   .into('books')
@@ -41,10 +40,8 @@ router.post('/books', (req, res, next)=>{
 router.patch('/books/:id', (req, res, next)=>{
   let id = Number.parseInt(req.params.id);
   let body = humps.decamelizeKeys(req.body);
-  console.log(body);
 
   knex('books')
-  // .into('books')
   .where('id', id)
   .update(body)
   .returning('*')
@@ -53,5 +50,18 @@ router.patch('/books/:id', (req, res, next)=>{
   });
 });
 
+router.delete('/books/:id', (req, res, next)=>{
+  let id = Number.parseInt(req.params.id);
+  let body = humps.decamelizeKeys(req.body);
+
+  knex('books')
+  .where('id', id)
+  .del()
+  .returning('*')
+  .then((response)=>{
+    delete response[0].id;
+    res.send(humps.camelizeKeys(response[0]));
+  });
+});
 
 module.exports = router;
